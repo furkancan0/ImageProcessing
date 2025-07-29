@@ -109,7 +109,7 @@ public class ImageService {
     public byte[] grayScale(MultipartFile file) throws IOException {
         BufferedImage image = ImageIO.read(file.getInputStream());
         BufferedImage bufferedImage = ImageUtils.grayScale(image);
-        //test
+        //test scale
         return ImageUtils.conversionImage(bufferedImage, file.getContentType().split("/")[1]);
     }
 
