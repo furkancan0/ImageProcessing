@@ -1,0 +1,43 @@
+server:
+  port: 8050
+spring:
+  application:
+    name: Image-Processing-Task
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/imageproc
+    username: furkan
+    password: furkan
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+
+
+jwt:
+  header: Authorization
+  secret: ANMGN10M0EI76QJPOOCAKRD1RJ98C6AACBIM8YYCJKMH43VTD52IRJE8N0DEOB70
+  expiration: 6048000
+
+resilience4j:
+  ratelimiter:
+    configs:
+      default:
+        limitForPeriod: 2
+        limitRefreshPeriod: 10s
+  retry:
+    instances:
+      exampleService:
+        maxAttempts: 3
+        waitDuration: 500ms
+        retryExceptions:
+          - java.io.IOException
+        ignoreExceptions:
+          - java.lang.IllegalArgumentException
+
