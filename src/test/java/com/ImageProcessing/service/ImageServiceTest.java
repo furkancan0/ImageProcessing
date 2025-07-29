@@ -5,5 +5,8 @@ import org.springframework.mock.web.MockMultipartFile;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ImageServiceTest {
-    MockMultipartFile firstFile = new MockMultipartFile("data", "filename.txt", "text/plain", "some xml".getBytes());
+    MockMultipartFile firstFile = new MockMultipartFile("image", "image.txt", "text/plain", "some xml".getBytes());
+    @Test
+    void uploadImage() {
+    }
 }
