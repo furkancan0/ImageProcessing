@@ -1,69 +1,93 @@
 package com.ImageProcessing.service;
 
-import com.ImageProcessing.dto.ImageDataDto;
-import com.ImageProcessing.dto.SearchRequest;
 import com.ImageProcessing.entity.Image;
 import com.ImageProcessing.entity.User;
 import com.ImageProcessing.exception.ApiRequestException;
 import com.ImageProcessing.repository.ImageRepository;
 import com.ImageProcessing.repository.projection.ImageProjection;
+import com.ImageProcessing.util.AuthUtil;
 import com.ImageProcessing.util.ImageUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
+import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+
 import java.util.List;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class StoreService {
 
-    @Autowired
-    private ImageRepository repository;
-    @Autowired
-    private AuthService authService;
+    private final ImageRepository repository;
+    private final AuthService authService;
 
     @Transactional(readOnly = true)
-    public Page<ImageProjection> getImages(Integer page){
-        User user = authService.getCurrentUser();
-        Pageable pageable = PageRequest.of(page, 10, Sort.Direction.DESC, "imageDate");
-        return repository.getUserImages(user,pageable);
+    public List<ImageProjection> getImages(Pageable pageable){
+        Long currentUserId = AuthUtil.getAuthenticatedUserId();
+        return repository.getAuthorImages(currentUserId,pageable).getContent();
     }
 
     @Transactional(readOnly = true)
-    public List<ImageProjection> searchImages(String query, Integer page) {
-        User user = authService.getCurrentUser();
-        Pageable pageable = PageRequest.of(page, 10, Sort.Direction.DESC, "imageDate");
-        return repository.searchUserImages(user,query,pageable).getContent();
+    public List<ImageProjection> searchImages(String query, Pageable pageable) {
+        Long currentUserId = AuthUtil.getAuthenticatedUserId();
+        return repository.searchUserImages(currentUserId,query,pageable).getContent();
     }
 
     @Transactional(readOnly = true)
-    public ImageDataDto downloadImage(Long imageId){
-        Image image = repository.getImageById(imageId)
-                .orElseThrow(() -> new ApiRequestException("Image Not found", HttpStatus.NOT_FOUND));
-        ImageDataDto imageDataDto = new ImageDataDto();
-        imageDataDto.setImageData(ImageUtils.decompressImage(image.getImageData()));
-        return imageDataDto;
+    public ImageProjection downloadImage(Long imageId){
+        ImageProjection imageProjection = repository.getImageById(imageId)
+                .orElseThrow(() -> new ApiRequestException("IMAGE_NOT_FOUND", HttpStatus.NOT_FOUND));
+        if (imageProjection.getDeleted()) {
+            throw new ApiRequestException("IMAGE_DELETED", HttpStatus.BAD_REQUEST);
+        }
+
+        return imageProjection;
     }
+
 
     @Transactional(readOnly = true)
     public List<ImageProjection> searchImagesByFilter(List<String> arr, LocalDateTime start, LocalDateTime end) {
-        List<ImageProjection> imageProjections = repository.getImagesByFilterParams(arr, start, end);
+        return repository.getImagesByFilterParams(arr, start, end);
+    }
 
-        System.out.println(imageProjections);
+    public String uploadImage(MultipartFile file) throws IOException {
+        User user = authService.getCurrentUser();
 
-        return imageProjections;
+        repository.save(Image.builder()
+                .name(file.getOriginalFilename())
+                .type(file.getContentType())
+                .imageData(ImageUtils.compressImage(file.getBytes()))
+                .imageDate(LocalDateTime.now())
+                .deleted(false)
+                .user(user).build());
+        return "IMAGE_UPLOAD_SUCCESSFUL";
+    }
+
+    @Transactional(readOnly = true)
+    public List<ImageProjection> getImagesByUserId(Long userId, Pageable pageable){
+        Long authenticatedUserId = AuthUtil.getAuthenticatedUserId();
+        if(!authenticatedUserId.equals(userId)){
+            if (authService.isUserHavePrivateProfile(userId)) {
+                throw new ApiRequestException("PRIVATE_USER", HttpStatus.NOT_FOUND);
+            }
+        }
+        return repository.getUserImages(userId,pageable).getContent();
+    }
+
+    @Transactional
+    public String deleteImage(Long imageId) {
+        Long currentUserId = AuthUtil.getAuthenticatedUserId();
+        Image image = repository.getImageByUserId(currentUserId, imageId)
+                .orElseThrow(() -> new ApiRequestException("IMAGE_NOT_FOUND", HttpStatus.NOT_FOUND));
+        image.setDeleted(true);
+        return "YOUR_IMAGE_WAS_DELETED";
     }
 
 }

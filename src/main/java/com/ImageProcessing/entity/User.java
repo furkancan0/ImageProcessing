@@ -32,6 +32,9 @@ public class User implements UserDetails {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdDate;
 
+    @Column(name = "private_profile", nullable = false, columnDefinition = "boolean default false")
+    private boolean privateProfile;
+
     @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false)
     private Role role;

@@ -23,6 +23,9 @@ public class Image {
     private String type;
     private Long fileSize;
 
+    @Column(name = "deleted", nullable = false, columnDefinition = "boolean default false")
+    private boolean deleted = false;
+
     @Lob
     @Column(name = "image_data",length = 1000)
     private byte[] imageData;
