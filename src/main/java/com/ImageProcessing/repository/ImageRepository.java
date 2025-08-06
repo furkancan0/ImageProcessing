@@ -17,20 +17,20 @@ import java.util.Optional;
 
 public interface ImageRepository extends JpaRepository<Image,Long> {
     @Query("SELECT s FROM Image s WHERE s.id = :imageId")
-    Optional<Image> getImageById(@Param("imageId") Long imageId);
+    Optional<ImageProjection> getImageById(@Param("imageId") Long imageId);
 
     @Query("""
             SELECT image FROM Image image
-            WHERE image.user = :user
+            WHERE image.user.id = :id
             ORDER BY image.imageDate DESC
             """)
-    Page<ImageProjection> getUserImages(@Param("user") User user, Pageable pageable);
+    Page<ImageProjection> getAuthorImages(@Param("userId") Long id, Pageable pageable);
 
     @Query("SELECT image FROM Image image WHERE UPPER(image.name) " +
             "LIKE UPPER(CONCAT('%',:query,'%')) " +
-            "AND image.user = :user " +
+            "AND image.user.id = :id " +
             "ORDER BY image.imageDate ASC")
-    Page<ImageProjection> searchUserImages(@Param("user") User user, String query, Pageable pageable);
+    Page<ImageProjection> searchUserImages(@Param("userId") Long id, String query, Pageable pageable);
 
     @Query("SELECT image FROM Image image " +
             "WHERE (coalesce(:types, null) IS NULL OR split_part(image.type, '/', 2) IN :types) " +
@@ -40,4 +40,18 @@ public interface ImageRepository extends JpaRepository<Image,Long> {
             List<String> types,
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end);
+
+    @Query("""
+            SELECT image FROM Image image
+            WHERE image.user.id = :userId
+            ORDER BY image.imageDate DESC
+            """)
+    Page<ImageProjection> getUserImages(@Param("user") Long userId, Pageable pageable);
+
+    @Query("""
+            SELECT image FROM Image image
+            WHERE image.user.id = :userId
+            AND image.id = :imageId
+            """)
+    Optional<Image> getImageByUserId(@Param("userId") Long userId, @Param("tweetId") Long imageId);
 }

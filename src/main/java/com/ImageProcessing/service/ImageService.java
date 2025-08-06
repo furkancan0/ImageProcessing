@@ -27,7 +27,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -41,16 +40,6 @@ public class ImageService {
 
     public static String[] allowedFormats={"JPG", "JPEG", "PNG", "BMP", "WBMP" , "GIF"};
 
-    public void uploadImage(MultipartFile file) throws IOException {
-        User user = authService.getCurrentUser();
-
-        repository.save(Image.builder()
-                .name(file.getOriginalFilename())
-                .type(file.getContentType())
-                .imageData(ImageUtils.compressImage(file.getBytes()))
-                .imageDate(LocalDateTime.now())
-                .user(user).build());
-    }
 
     public byte[] resizeImage(MultipartFile file, int targetSize) throws IOException {
         BufferedImage image = ImageIO.read(file.getInputStream());
@@ -89,19 +78,21 @@ public class ImageService {
     }
 
     public byte[] rotateImage(MultipartFile file, String rotateDeg) throws IOException {
-        if(Objects.equals(rotateDeg, "")){
+        // Return original if no rotation specified
+        if (rotateDeg == null || rotateDeg.isBlank()) {
             return file.getBytes();
         }
-        Scalr.Rotation type = null;
+        Scalr.Rotation rotation;
 
-        type = switch (rotateDeg) {
-            case "90" -> Scalr.Rotation.CW_90;
-            case "180" -> Scalr.Rotation.CW_180;
-            case "270" -> Scalr.Rotation.CW_270;
-            default -> type;
-        };
+        switch (rotateDeg) {
+            case "90" -> rotation = Scalr.Rotation.CW_90;
+            case "180" -> rotation = Scalr.Rotation.CW_180;
+            case "270" -> rotation = Scalr.Rotation.CW_270;
+            default -> throw new IllegalArgumentException("Unsupported rotation degree: " + rotateDeg);
+        }
+
         BufferedImage image = ImageIO.read(file.getInputStream());
-        BufferedImage bufferedImage = ImageUtils.rotate(image , type);
+        BufferedImage bufferedImage = ImageUtils.rotate(image , rotation);
 
         return ImageUtils.conversionImage(bufferedImage, file.getContentType().split("/")[1]);
     }
@@ -109,7 +100,6 @@ public class ImageService {
     public byte[] grayScale(MultipartFile file) throws IOException {
         BufferedImage image = ImageIO.read(file.getInputStream());
         BufferedImage bufferedImage = ImageUtils.grayScale(image);
-        //test scale
         return ImageUtils.conversionImage(bufferedImage, file.getContentType().split("/")[1]);
     }
 

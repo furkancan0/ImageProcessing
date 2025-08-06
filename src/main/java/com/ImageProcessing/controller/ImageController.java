@@ -26,12 +26,6 @@ public class ImageController {
     @Autowired
     ObjectMapper objectMapper = new ObjectMapper();
 
-    @PreAuthorize("hasRole('USER')")
-    @PostMapping
-    public ResponseEntity<?> uploadImage(@RequestParam("image")MultipartFile file) throws IOException {
-        service.uploadImage(file);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Image uploaded");
-    }
 
 
     @PostMapping("/resize")

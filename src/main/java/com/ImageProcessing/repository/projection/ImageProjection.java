@@ -7,4 +7,5 @@ public interface ImageProjection {
     byte[] getImageData();
     String getType();
     LocalDateTime getImageDate();
+    boolean getDeleted();
 }
