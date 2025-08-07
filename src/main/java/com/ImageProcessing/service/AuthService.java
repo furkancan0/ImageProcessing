@@ -73,7 +73,7 @@ public class AuthService {
     }
 
     public boolean isUserHavePrivateProfile(Long userId) {
-        return !userRepository.isUserHavePrivateProfile(userId);
+        return userRepository.isUserHavePrivateProfile(userId);
     }
 
 }

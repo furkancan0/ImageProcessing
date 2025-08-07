@@ -41,10 +41,8 @@ class StoreServiceTest {
     @Mock
     private AuthService authService;
 
-
     @InjectMocks
     private StoreService storeService;
-
 
     private User mockUser;
 

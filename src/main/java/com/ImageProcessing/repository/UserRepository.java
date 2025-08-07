@@ -12,7 +12,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("""
             SELECT CASE WHEN count(user) > 0 THEN true ELSE false END FROM User user
-            WHERE user.id = :userId AND user.privateProfile = false
+            WHERE user.id = :userId AND user.privateProfile = true
             """)
     boolean isUserHavePrivateProfile(@Param("userId") Long userId);
 }

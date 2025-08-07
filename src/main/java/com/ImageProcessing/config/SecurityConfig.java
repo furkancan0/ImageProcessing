@@ -31,7 +31,7 @@ public class SecurityConfig {
                         req.requestMatchers("api/v1/auth/**")
                                 .permitAll()
                                 .requestMatchers("api/v1/image/**").permitAll()
-                                .requestMatchers("api/v1/store/**").permitAll()
+                                .requestMatchers("api/v1/store/**").hasRole("USER")
                                 .requestMatchers("api/checkout/**").hasRole("USER")
                                 .anyRequest()
                                 .authenticated())

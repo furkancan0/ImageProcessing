@@ -13,7 +13,6 @@ spring:
       ddl-auto: update
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-    show-sql: true
   servlet:
     multipart:
       max-file-size: 5MB
