@@ -26,8 +26,6 @@ public class ImageController {
     @Autowired
     ObjectMapper objectMapper = new ObjectMapper();
 
-
-
     @PostMapping("/resize")
     public ResponseEntity<?> resizeImage(@RequestParam("image") MultipartFile file, @RequestParam(value = "size") String size) throws IOException {
         byte[] imageData = service.resizeImage(file, Integer.parseInt(size));

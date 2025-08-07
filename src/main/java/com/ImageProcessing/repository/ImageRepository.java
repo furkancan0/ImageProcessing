@@ -16,21 +16,21 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ImageRepository extends JpaRepository<Image,Long> {
-    @Query("SELECT s FROM Image s WHERE s.id = :imageId")
+    @Query("SELECT image FROM Image image WHERE image.id = :imageId ")
     Optional<ImageProjection> getImageById(@Param("imageId") Long imageId);
 
     @Query("""
             SELECT image FROM Image image
-            WHERE image.user.id = :id
+            WHERE image.user.id = :userId
             ORDER BY image.imageDate DESC
             """)
-    Page<ImageProjection> getAuthorImages(@Param("userId") Long id, Pageable pageable);
+    Page<ImageProjection> getAuthorImages(@Param("userId") Long userId, Pageable pageable);
 
     @Query("SELECT image FROM Image image WHERE UPPER(image.name) " +
             "LIKE UPPER(CONCAT('%',:query,'%')) " +
-            "AND image.user.id = :id " +
+            "AND image.user.id = :userId " +
             "ORDER BY image.imageDate ASC")
-    Page<ImageProjection> searchUserImages(@Param("userId") Long id, String query, Pageable pageable);
+    Page<ImageProjection> searchUserImages(@Param("userId") Long userId, String query, Pageable pageable);
 
     @Query("SELECT image FROM Image image " +
             "WHERE (coalesce(:types, null) IS NULL OR split_part(image.type, '/', 2) IN :types) " +
@@ -46,12 +46,12 @@ public interface ImageRepository extends JpaRepository<Image,Long> {
             WHERE image.user.id = :userId
             ORDER BY image.imageDate DESC
             """)
-    Page<ImageProjection> getUserImages(@Param("user") Long userId, Pageable pageable);
+    Page<ImageProjection> getUserImages(@Param("userId") Long userId, Pageable pageable);
 
     @Query("""
             SELECT image FROM Image image
             WHERE image.user.id = :userId
             AND image.id = :imageId
             """)
-    Optional<Image> getImageByUserId(@Param("userId") Long userId, @Param("tweetId") Long imageId);
+    Optional<Image> getImageByUserId(@Param("userId") Long userId, @Param("imageId") Long imageId);
 }

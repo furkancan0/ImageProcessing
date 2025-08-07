@@ -26,55 +26,54 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/store")
-@RequiredArgsConstructor
 public class StoreController {
 
-    private final StoreService service;
+    @Autowired
+    private StoreService service;
 
-    @GetMapping
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/images")
     public List<ImageProjection> getImagesPage(@PageableDefault(size = 10, sort = "imageDate",
             direction = Sort.Direction.DESC) Pageable pageable) {
-            //Get author images
-            return service.getImages(pageable);
+        //Get author images
+        return service.getImages(pageable);
     }
 
-    @GetMapping("/q")
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/images/search")
     public List<ImageProjection> getImagesQuery(@PageableDefault(size = 10, sort = "imageDate", direction = Sort.Direction.DESC) Pageable pageable,
                                            @RequestParam(name = "query", defaultValue = "") String query) {
         return service.searchImages(query, pageable);
     }
 
-    @GetMapping("/search")
+    @PostMapping("/images/filter")
     public List<ImageProjection> getImagesByFilter(@RequestBody SearchRequest searchRequest) {
         return service.searchImagesByFilter(searchRequest.getTypes(), searchRequest.getDateStart(), searchRequest.getDateEnd());
     }
 
     //public List<ImageProjection> getImagesByFilter(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS") LocalDateTime start)
 
-    @PreAuthorize("hasRole('USER')")
     @GetMapping("/{imageId}")
     public ResponseEntity<?> downloadImage(@PathVariable Long imageId) {
         ImageProjection imageProjection = service.downloadImage(imageId);
         return ResponseEntity.status(HttpStatus.OK)
-                .contentType(MediaType.valueOf(MediaType.IMAGE_PNG_VALUE))
                 .body(imageProjection);
     }
 
-    @PreAuthorize("hasRole('USER')")
     @PostMapping
     public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile file) throws IOException {
         String message = service.uploadImage(file);
         return ResponseEntity.status(HttpStatus.CREATED).body(message);
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/images/{userId}")
     public List<ImageProjection> getImagesByUserId(@PageableDefault(size = 10, sort = "imageDate", direction = Sort.Direction.DESC) Pageable pageable,
                                                  @PathVariable("userId") Long userId) {
         return service.getImagesByUserId(userId, pageable);
     }
 
     @DeleteMapping(("/{imageId}"))
-    public ResponseEntity<String> deleteTweet(@PathVariable("imageId") Long imageId) {
+    public ResponseEntity<String> deleteImage(@PathVariable("imageId") Long imageId) {
         return ResponseEntity.ok(service.deleteImage(imageId));
     }
 }

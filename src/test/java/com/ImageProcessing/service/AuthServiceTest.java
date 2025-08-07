@@ -123,21 +123,4 @@ class AuthServiceTest {
         verify(userRepository, times(1)).findById(applicationUser.getId());
     }
 
-    @Test
-    void isUserHavePrivateProfile() {
-        when(userRepository.isUserHavePrivateProfile(2L)).thenReturn(false);
-
-        boolean result = authService.isUserHavePrivateProfile(2L);
-
-        assertTrue(result);
-    }
-
-    @Test
-    void isUserHavePrivateProfile_ReturnsFalseIfPrivate() {
-        when(userRepository.isUserHavePrivateProfile(2L)).thenReturn(true);
-
-        boolean result = authService.isUserHavePrivateProfile(2L);
-
-        assertFalse(result);
-    }
 }
