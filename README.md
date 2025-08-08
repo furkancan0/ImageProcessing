@@ -1,5 +1,5 @@
 # ImageProcessing
-This is an Image Processing System built with Java Spring Boot, featuring user authentication and various image processing functionalities. Image data stored in a PostgreSQL databaseThe project utilizes Java's Graphics2D and the Imgscalr library for image transformations.
+This is an Image Processing System built with Java Spring Boot, featuring user authentication and various image processing functionalities. Image data stored in a PostgreSQL databaseThe project utilizes Java's  Imgscalr library for image transformations.
 
 # User Authentication
 - Sign-Up: Users can create an account.  
