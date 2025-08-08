@@ -10,6 +10,8 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
 
+    void deleteByName(String name);
+
     @Query("""
             SELECT CASE WHEN count(user) > 0 THEN true ELSE false END FROM User user
             WHERE user.id = :userId AND user.privateProfile = true

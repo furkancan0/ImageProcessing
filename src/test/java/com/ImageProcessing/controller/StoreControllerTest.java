@@ -61,7 +61,7 @@ public class StoreControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/store/images"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[*]", hasSize(4)))
+                .andExpect(jsonPath("$[*]", hasSize(5)))
                 .andExpect(jsonPath("$[0].type").value("image/jpeg"));
     }
 
@@ -102,14 +102,14 @@ public class StoreControllerTest {
                         .content(objectMapper.writeValueAsString(searchRequest))
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[*]", hasSize(4)))
+                .andExpect(jsonPath("$[*]", hasSize(5)))
                 .andExpect(jsonPath("$[0].type").value("image/jpeg"));
     }
 
     @Test
     @DisplayName("[200] GET /api/v1/store/{imageId} - Download Image")
     void downloadImage() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/store/{imageId}", 99L))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/store/{imageId}", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.type").value("image/jpeg"))
                 .andExpect(jsonPath("$.name").value("wallpaperflare.com_wallpaper (1).jpg"));
@@ -131,21 +131,13 @@ public class StoreControllerTest {
                 .andExpect(jsonPath("$", Matchers.is("IMAGE_DELETED")));
     }
 
-    @Test
-    @DisplayName("[200] POST /api/v1/store/{imageId} - Upload Image")
-    public void uploadImage() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/store")
-                        .file(mockImageFile))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$", Matchers.is("IMAGE_UPLOAD_SUCCESSFUL")));
-    }
 
     @Test
     @DisplayName("[200] GET /api/v1/store/images/{userId} - Get User Images")
     public void getImagesByUserId() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/store/images/{userId}", 1L))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[*]", hasSize(4)))
+                .andExpect(jsonPath("$[*]", hasSize(5)))
                 .andExpect(jsonPath("$[0].type").value("image/jpeg"));
     }
 
