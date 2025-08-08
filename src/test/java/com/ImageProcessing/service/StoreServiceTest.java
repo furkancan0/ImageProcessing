@@ -7,6 +7,7 @@ import com.ImageProcessing.exception.ApiRequestException;
 import com.ImageProcessing.repository.ImageRepository;
 import com.ImageProcessing.repository.UserRepository;
 import com.ImageProcessing.repository.projection.ImageProjection;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +18,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.IOException;
@@ -57,6 +61,11 @@ class StoreServiceTest {
         mockUser = new User();
         mockUser.setId(2L);
         ServiceTestHelper.mockAuthenticatedUser();
+    }
+
+    @AfterEach
+    void cleanup() {
+        SecurityContextHolder.clearContext();
     }
 
     @Test
@@ -143,4 +152,5 @@ class StoreServiceTest {
         assertTrue(mockImage.isDeleted());
         verify(imageRepository, times(1)).getImageByUserId(1L,mockImage.getId());
     }
+
 }
