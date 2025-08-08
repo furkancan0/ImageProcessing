@@ -1,2 +1,32 @@
 # ImageProcessing
-Image Management System built with Java Spring Boot
+This is an Image Processing System built with Java Spring Boot, featuring user authentication and various image processing functionalities. Image data stored in a PostgreSQL databaseThe project utilizes Java's Graphics2D and the Imgscalr library for image transformations.
+
+# User Authentication
+- Sign-Up: Users can create an account.  
+- Log-In: Users can log into their account.  
+- JWT Authentication: Secure endpoints using JWT tokens for authenticated access.  
+
+# Image Processing  
+- Transform Image: Users can perform various transformations on uploaded images, including:  
+- Resize  
+- Crop  
+- Rotate  
+- Watermark  
+- Flip  
+- Mirror  
+- Compress  
+- Change format (JPEG, PNG, etc.)  
+- Apply filters (grayscale, sepia, etc.)   
+
+# Used Technologies  
+- Spring (Boot, Data, Security)
+- JPA / Hibernate
+- PostgreSQL
+- Junit, Mockito
+- Lombok
+
+### Includes all service and integration test.   
+# Project Idea  
+https://roadmap.sh/projects/image-processing-service
+
+
