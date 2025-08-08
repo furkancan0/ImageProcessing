@@ -7,7 +7,7 @@ This is an Image Processing System built with Java Spring Boot, featuring user a
 - JWT Authentication: Secure endpoints using JWT tokens for authenticated access.  
 
 # Image Processing  
-- Transform Image: Users can perform various transformations on uploaded images, including:  
+- Transform Image   
 - Resize  
 - Crop  
 - Rotate  
