@@ -16,7 +16,7 @@ This is an Image Processing System built with Java Spring Boot, featuring user a
 - Mirror  
 - Compress  
 - Change format (JPEG, PNG, etc.)  
-- Apply filters (grayscale, sepia, etc.)   
+- Grayscale filter
 
 # Used Technologies  
 - Spring (Boot, Data, Security)
