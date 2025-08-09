@@ -158,7 +158,7 @@ public class StoreControllerTest {
     }
 
     @Test
-    @DisplayName("[200] DELETE /api/v1/store/{imageId} - Delete Image Not found")
+    @DisplayName("[404] DELETE /api/v1/store/{imageId} - Delete Image Not found")
     public void deleteImageShouldReturnNotfound() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/store/{imageId}", 99L))
                 .andExpect(status().isNotFound())
