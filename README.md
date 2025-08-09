@@ -10,13 +10,14 @@ This is an Image Processing System built with Java Spring Boot, featuring user a
 - Transform Image   
 - Resize  
 - Crop  
-- Rotate  
-- Watermark  
+- Rotate    
 - Flip  
 - Mirror  
 - Compress  
 - Change format (JPEG, PNG, etc.)  
 - Grayscale filter
+- Search by filter
+- Paginated images
 
 # Used Technologies  
 - Spring (Boot, Data, Security)
