@@ -1,27 +1,19 @@
 package com.ImageProcessing.controller;
 
-import com.ImageProcessing.dto.ImageDataDto;
 import com.ImageProcessing.dto.SearchRequest;
-import com.ImageProcessing.entity.Image;
 import com.ImageProcessing.repository.projection.ImageProjection;
-import com.ImageProcessing.service.ImageService;
 import com.ImageProcessing.service.StoreService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController

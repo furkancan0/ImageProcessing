@@ -8,7 +8,6 @@ import com.ImageProcessing.repository.projection.ImageProjection;
 import com.ImageProcessing.util.AuthUtil;
 import com.ImageProcessing.util.ImageUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

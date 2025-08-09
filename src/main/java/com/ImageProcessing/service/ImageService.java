@@ -1,33 +1,20 @@
 package com.ImageProcessing.service;
 
 import com.ImageProcessing.dto.Coordinates;
-import com.ImageProcessing.dto.ImageDataDto;
-import com.ImageProcessing.entity.Image;
-import com.ImageProcessing.entity.User;
 import com.ImageProcessing.exception.ApiRequestException;
 import com.ImageProcessing.repository.ImageRepository;
-import com.ImageProcessing.repository.projection.ImageProjection;
 import com.ImageProcessing.util.ImageUtils;
-import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
-import io.github.resilience4j.retry.annotation.Retry;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Objects;
 
 @Service
 @Transactional
