@@ -54,11 +54,11 @@ class ImageServiceTest {
     @Test
     void testConversionImage_UnsupportedFormat_Throws() {
         MockMultipartFile badFile = new MockMultipartFile(
-                "image", "bad.pdf", "image/pdf", new byte[]{1, 2}
+                "image", "bad.csv", "image/csv", new byte[]{1, 2}
         );
 
         ApiRequestException ex = assertThrows(ApiRequestException.class, () ->
-                imageService.conversionImage(badFile, "PLG")
+                imageService.conversionImage(badFile, "CSV")
         );
 
         assertEquals("Format not supported", ex.getMessage());
