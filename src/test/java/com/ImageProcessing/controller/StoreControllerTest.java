@@ -124,7 +124,7 @@ public class StoreControllerTest {
     }
 
     @Test
-    @DisplayName("[500] GET /api/v1/store/{imageId} - Download Image Bad Request")
+    @DisplayName("[400] GET /api/v1/store/{imageId} - Download Image Bad Request")
     public void downloadImageShouldReturnBadRequest() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/store/{imageId}", 2L))
                 .andExpect(status().isBadRequest())
