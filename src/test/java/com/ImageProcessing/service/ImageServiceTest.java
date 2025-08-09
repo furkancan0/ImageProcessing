@@ -27,11 +27,6 @@ class ImageServiceTest {
     @InjectMocks
     private ImageService imageService;
 
-    InputStream input = new FileInputStream("src/test/resources/test.jpg");
-
-    ImageServiceTest() throws FileNotFoundException {
-    }
-
     private MockMultipartFile mockImageFile;
 
     @BeforeEach
