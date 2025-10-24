@@ -39,13 +39,16 @@ public class ImageControllerTest extends BaseIntegrationTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        mockImageFile = new MockMultipartFile(
-                "image",
-                "test.jpg",
-                MediaType.IMAGE_JPEG_VALUE,
-                input
-        );
+        try (InputStream input = new FileInputStream("src/test/resources/test.jpg")) {
+            mockImageFile = new MockMultipartFile(
+                    "image",
+                    "test.jpg",
+                    MediaType.IMAGE_JPEG_VALUE,
+                    input
+            );
+        }
     }
+
     @Test
     @DisplayName("[200] POST /api/v1/image/resize - Resize Image")
     public void resizeImageShouldReturnOk() throws Exception {
