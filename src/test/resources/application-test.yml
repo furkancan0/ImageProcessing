@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: Image-Processing-Task
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/imageproc-test
+    username: furkan
+    password: furkan
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
