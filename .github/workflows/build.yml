@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       working-directory: .
-      DOCKER_IMAGE_NAME: image-processing-service
+      IMAGE_NAME: ghcr.io/${{ github.actor }}/image-processing-service
     defaults:
       run:
         working-directory: ${{ env.working-directory }}
@@ -47,13 +47,17 @@ jobs:
 
       - name: Extract image metadata
         id: meta
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ github.actor }}//${{ env.DOCKER_IMAGE_NAME }}
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=sha
 
-      - name: Build and push
-        uses: docker/build-push-action@v4
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
         with:
+          context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
