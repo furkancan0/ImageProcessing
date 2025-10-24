@@ -15,23 +15,15 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: furkan
-          POSTGRES_PASSWORD: furkan
-          POSTGRES_DB: imageproc_db
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U postgres"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+    env:
+      working-directory: .
+      DOCKER_IMAGE_NAME: image-processing-service
+    defaults:
+      run:
+        working-directory: ${{ env.working-directory }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Java 17
         uses: actions/setup-java@v4
@@ -62,8 +54,6 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          context: image-processing-service
-          file: Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
