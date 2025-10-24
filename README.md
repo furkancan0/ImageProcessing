@@ -23,6 +23,7 @@ This is an Image Processing System built with Java Spring Boot, featuring user a
 - Spring (Boot, Data, Security)
 - JPA / Hibernate
 - PostgreSQL
+- Test containers
 - Junit, Mockito
 - Lombok
 
