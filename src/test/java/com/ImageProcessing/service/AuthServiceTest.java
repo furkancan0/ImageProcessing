@@ -70,7 +70,7 @@ class AuthServiceTest {
                 .createdDate(LocalDateTime.now())
                 .build();
 
-        when(roleRepository.findByName(RoleEnum.USER)).thenReturn(mockRole);
+        when(roleRepository.findByName(RoleEnum.USER)).thenReturn(Optional.of(mockRole));
         when(passwordEncoder.encode("password")).thenReturn("hashedPassword");
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(jwtService.createToken(any(User.class), any())).thenReturn("mock_jwt");

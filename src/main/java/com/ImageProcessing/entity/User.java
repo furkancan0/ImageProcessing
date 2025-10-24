@@ -29,13 +29,13 @@ public class User implements UserDetails {
     private String password;
 
     @CreatedDate
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdDate;
+    @Column(name = "created_date", nullable = false, updatable = false)
+    private LocalDateTime createdDate = LocalDateTime.now();;
 
     @Column(name = "private_profile", nullable = false, columnDefinition = "boolean default false")
     private boolean privateProfile;
 
-    @ManyToOne(cascade = CascadeType.DETACH)
+    @ManyToOne()
     @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false)
     private Role role;
 

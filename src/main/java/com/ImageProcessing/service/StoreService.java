@@ -50,7 +50,6 @@ public class StoreService {
         return imageProjection;
     }
 
-
     @Transactional(readOnly = true)
     public List<ImageProjection> searchImagesByFilter(List<String> arr, LocalDateTime start, LocalDateTime end) {
         return repository.getImagesByFilterParams(arr, start, end);

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "image")
+@Table(name = "images")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,6 +21,8 @@ public class Image {
 
     private String name;
     private String type;
+
+    @Column(name = "file_size")
     private Long fileSize;
 
     @Column(name = "deleted", nullable = false, columnDefinition = "boolean default false")

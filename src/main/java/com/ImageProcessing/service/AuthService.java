@@ -4,6 +4,7 @@ import com.ImageProcessing.dto.*;
 import com.ImageProcessing.entity.Role;
 import com.ImageProcessing.entity.User;
 import com.ImageProcessing.exception.ApiRequestException;
+import com.ImageProcessing.exception.DuplicateResourceException;
 import com.ImageProcessing.jwt.JwtService;
 import com.ImageProcessing.repository.RoleRepository;
 import com.ImageProcessing.repository.UserRepository;
@@ -16,8 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +28,13 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest registerRequest) {
-        Role role = roleRepository.findByName(RoleEnum.USER);//New accounts have default user role
+        Role role = roleRepository.findByName(RoleEnum.USER)//New accounts have default user role
+                .orElseThrow(() -> new ApiRequestException("ROLE_NOT_FOUND", HttpStatus.NOT_FOUND));
+
+        if (userRepository.existsByEmail(registerRequest.getEmail())) {
+            throw new DuplicateResourceException("Email already exists", HttpStatus.CONFLICT);
+        }
+
         var user = User.builder()
                 .name(registerRequest.getUsername())
                 .email(registerRequest.getEmail())

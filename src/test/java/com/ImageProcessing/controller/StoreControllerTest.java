@@ -3,57 +3,34 @@ package com.ImageProcessing.controller;
 import com.ImageProcessing.dto.SearchRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WithUserDetails("2331ef@gmail.com")
+@WithUserDetails("test@gmail.com")
 @SpringBootTest
 @AutoConfigureMockMvc
-public class StoreControllerTest {
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+public class StoreControllerTest extends BaseIntegrationTest{
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    private MockMultipartFile mockImageFile;
-
-    InputStream input = new FileInputStream("src/test/resources/test.jpg");
-
-    public StoreControllerTest() throws FileNotFoundException {
-    }
-
-    @BeforeEach
-    void setUp() throws IOException {
-        mockImageFile = new MockMultipartFile(
-                "image",
-                "test.jpg",
-                MediaType.IMAGE_JPEG_VALUE,
-                input
-        );
-    }
 
     @Test
     @DisplayName("[200] GET /api/v1/store/images - Get Images")
@@ -81,14 +58,14 @@ public class StoreControllerTest {
     @DisplayName("[200] GET /api/v1/store/images/search - Get Images by Query")
     void getImagesWithQueryAndPageable() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/store/images/search")
-                        .param("query", "wall")
+                        .param("query", "image")
                         .param("page", "0")
                         .param("size", "5")
                         .param("sort", "imageDate,desc"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].name").value("wallpaperflare.com_wallpaper (1).jpg"));
+                .andExpect(jsonPath("$[0].name").value("image1.jpg"));
     }
 
     @Test
@@ -102,8 +79,7 @@ public class StoreControllerTest {
                         .content(objectMapper.writeValueAsString(searchRequest))
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[*]", hasSize(5)))
-                .andExpect(jsonPath("$[0].type").value("image/jpeg"));
+                .andExpect(jsonPath("$[*]", hasSize(4)));
     }
 
     @Test
@@ -112,7 +88,7 @@ public class StoreControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/store/{imageId}", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.type").value("image/jpeg"))
-                .andExpect(jsonPath("$.name").value("wallpaperflare.com_wallpaper (1).jpg"));
+                .andExpect(jsonPath("$.name").value("image1.jpg"));
     }
 
     @Test
