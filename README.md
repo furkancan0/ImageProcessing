@@ -25,6 +25,7 @@ This is an Image Processing System built with Java Spring Boot, featuring user a
 - PostgreSQL
 - Test containers
 - Junit, Mockito
+- Deployment Docker, github pipelines
 - Lombok
 
 🛠️### Includes all service and integration test.   
