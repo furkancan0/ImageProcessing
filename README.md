@@ -28,7 +28,8 @@ This is an Image Processing System built with Java Spring Boot, featuring user a
 - Deployment Docker, github pipelines
 - Lombok
 
-🛠️### Includes all service and integration test.   
+# 🛠️Includes all service and integration tests.   
+
 # Project Idea  
 https://roadmap.sh/projects/image-processing-service
 
