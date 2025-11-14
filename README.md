@@ -23,10 +23,23 @@ This is an Image Processing System built with Java Spring Boot, featuring user a
 - Spring (Boot, Data, Security)
 - JPA / Hibernate
 - PostgreSQL
+- RabbitMQ
 - Test containers
 - Junit, Mockito
 - Deployment Docker, github pipelines
 - Lombok
+
+🧭# Example Workflow Summary  
+After image upload:  
+- Save image in DB or S3  
+- Publish event image.uploaded to RabbitMQ  
+- Consumers listen and perform:  
+--> Thumbnail creation  
+--> Compression  
+--> Metadata extraction  
+--> Search index update  
+--> Notification
+--> Analytics 
 
 # 🛠️Includes all service and integration tests.   
 
