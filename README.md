@@ -28,6 +28,8 @@ This is an Image Processing System built with Java Spring Boot, featuring user a
 - Junit, Mockito
 - Deployment Docker, github pipelines
 - Lombok
+- Prometheus
+- Grafana
 
 🧭 Example Workflow Summary  
 After image upload:  
