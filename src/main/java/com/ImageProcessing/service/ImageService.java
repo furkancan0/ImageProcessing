@@ -1,32 +1,42 @@
 package com.ImageProcessing.service;
 
+
 import com.ImageProcessing.dto.Coordinates;
-import com.ImageProcessing.exception.ApiRequestException;
-import com.ImageProcessing.repository.ImageRepository;
+
+import com.ImageProcessing.entity.Image;
 import com.ImageProcessing.util.ImageUtils;
+import lombok.RequiredArgsConstructor;
 import org.imgscalr.Scalr;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
+
+import java.util.Base64;
 
 @Service
 @Transactional
+@RequiredArgsConstructor()
 public class ImageService {
 
-    @Autowired
-    private ImageRepository repository;
-    @Autowired
-    private AuthService authService;
+    private static final Logger logger = LoggerFactory.getLogger(ImageService.class);
+
+    private final RabbitTemplate rabbitTemplate;
 
     public static String[] allowedFormats={"JPG", "JPEG", "PNG", "BMP", "WBMP" , "GIF"};
 
+    /* if(!Arrays.asList(allowedFormats).contains(format)){
+        throw new ApiRequestException("Format not supported", HttpStatus.BAD_REQUEST);
+    }*/
 
     public byte[] resizeImage(MultipartFile file, int targetSize) throws IOException {
         BufferedImage image = ImageIO.read(file.getInputStream());
@@ -35,19 +45,25 @@ public class ImageService {
         return ImageUtils.conversionImage(bufferedImage, file.getContentType().split("/")[1]);
     }
 
-    public byte[] conversionImage(MultipartFile file, String format) throws IOException {
-        if(!Arrays.asList(allowedFormats).contains(format)){
-            throw new ApiRequestException("Format not supported", HttpStatus.BAD_REQUEST);
+    public byte[] createThumbnail(Image image, Integer width){
+        byte[] bytes = ImageUtils.decompressImage(image.getImageData());
+        try {
+            BufferedImage img = ImageIO.read(new ByteArrayInputStream(bytes));
+            if (img == null) throw new IllegalArgumentException("Original image invalid or unsupported format");
+            BufferedImage bufferedImage = Scalr.resize(img, Scalr.Method.AUTOMATIC, Scalr.Mode.AUTOMATIC, width, Scalr.OP_ANTIALIAS);
+            return ImageUtils.conversionImage(bufferedImage, image.getType());
+        } catch (IOException e) {
+            throw new RuntimeException("Thumbnail creation failed", e);
         }
-        BufferedImage image = ImageIO.read(file.getInputStream());
-
-        return ImageUtils.conversionImage(image, format);
     }
 
-    public byte[] flipImage(MultipartFile file) throws IOException {
+    public String flipImage(MultipartFile file) throws IOException {
         BufferedImage image = ImageIO.read(file.getInputStream());
         BufferedImage bufferedImage = ImageUtils.flip(image);
-        return ImageUtils.conversionImage(bufferedImage, file.getContentType().split("/")[1]);
+        byte[] imageData = ImageUtils.conversionImage(bufferedImage, file.getContentType().split("/")[1]);
+        logger.info("image has flipped");
+
+        return Base64.getEncoder().encodeToString(imageData);
     }
 
     public byte[] mirrorImage(MultipartFile file) throws IOException {
@@ -84,10 +100,10 @@ public class ImageService {
         return ImageUtils.conversionImage(bufferedImage, file.getContentType().split("/")[1]);
     }
 
-    public byte[] grayScale(MultipartFile file) throws IOException {
+    public String grayScale(MultipartFile file) throws IOException {
         BufferedImage image = ImageIO.read(file.getInputStream());
         BufferedImage bufferedImage = ImageUtils.grayScale(image);
-        return ImageUtils.conversionImage(bufferedImage, file.getContentType().split("/")[1]);
+        byte[] imageData = ImageUtils.conversionImage(bufferedImage, file.getContentType().split("/")[1]);
+        return Base64.getEncoder().encodeToString(imageData);
     }
-
 }

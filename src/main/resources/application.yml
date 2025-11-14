@@ -17,7 +17,69 @@ spring:
     multipart:
       max-file-size: 5MB
       max-request-size: 5MB
+  flyway:
+    baseline-on-migrate: true
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    connection-timeout: 30s
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    # Take advantage of RabbitMQ 4 performance improvements
+    cache:
+      connection:
+        mode: connection
+        size: 10
+      channel:
+        size: 50
+        checkout-timeout: 5000ms
+    listener:
+      simple:
+        acknowledge-mode: manual
+        prefetch: 10
+        # Enhanced retry configuration for RabbitMQ 4
+        retry:
+          enabled: true
+          initial-interval: 1000ms
+          max-attempts: 3
+          max-interval: 10000ms
+          multiplier: 2.0
 
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      adjust-dates-to-context-time-zone: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,heapdump
+  endpoint:
+    health:
+      show-details: always
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http:
+          server:
+            requests: true
+
+
+logging:
+  level:
+    com.ImageProcessing: DEBUG
+    org.springframework.amqp: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
 
 jwt:
   header: Authorization

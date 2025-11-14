@@ -1,8 +1,13 @@
 package com.ImageProcessing.controller;
 
+import com.ImageProcessing.dto.ImageDto;
+import com.ImageProcessing.dto.ImageProcessingRequest;
 import com.ImageProcessing.dto.SearchRequest;
+import com.ImageProcessing.dto.UploadImageResponse;
+import com.ImageProcessing.entity.Image;
 import com.ImageProcessing.repository.projection.ImageProjection;
 import com.ImageProcessing.service.StoreService;
+import com.ImageProcessing.util.ImageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -13,11 +18,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/store")
+@RequestMapping("/api/v1/store")
 public class StoreController {
 
     @Autowired
@@ -38,6 +45,13 @@ public class StoreController {
         return service.searchImages(query, pageable);
     }
 
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/images/advancesearch")
+    public List<ImageDto> getImagesQuerySearch(@RequestParam(name = "query", defaultValue = "") String query) {
+        return service.searchImagesAdvanced(query);
+    }
+
+
     @PostMapping("/images/filter")
     public List<ImageProjection> getImagesByFilter(@RequestBody SearchRequest searchRequest) {
         return service.searchImagesByFilter(searchRequest.getTypes(), searchRequest.getDateStart(), searchRequest.getDateEnd());
@@ -54,8 +68,8 @@ public class StoreController {
 
     @PostMapping
     public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile file) throws IOException {
-        String message = service.uploadImage(file);
-        return ResponseEntity.status(HttpStatus.CREATED).body(message);
+        UploadImageResponse response = service.uploadImage(file);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/images/{userId}")
@@ -67,5 +81,10 @@ public class StoreController {
     @DeleteMapping(("/{imageId}"))
     public ResponseEntity<String> deleteImage(@PathVariable("imageId") Long imageId) {
         return ResponseEntity.ok(service.deleteImage(imageId));
+    }
+
+    @GetMapping("/getAll")
+    public ResponseEntity<List<ImageDto>> getAll() throws InterruptedException {
+        return ResponseEntity.ok(service.getAll());
     }
 }

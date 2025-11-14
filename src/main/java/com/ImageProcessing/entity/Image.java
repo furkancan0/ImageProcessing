@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
 
 import java.time.LocalDateTime;
 
@@ -20,22 +21,29 @@ public class Image {
     private Long id;
 
     private String name;
-    private String type;
+
+    private String type;//database->image/jpeg
+
+    @Column(columnDefinition = "text")
+    private String description;
 
     @Column(name = "file_size")
     private Long fileSize;
 
-    @Column(name = "deleted", nullable = false, columnDefinition = "boolean default false")
-    private boolean deleted = false;
+    @Lob
+    @JdbcTypeCode(java.sql.Types.BINARY)
+    @Column(name = "image_data")
+    private byte[] imageData;
 
     @Lob
-    @Column(name = "image_data",length = 1000)
-    private byte[] imageData;
+    @JdbcTypeCode(java.sql.Types.BINARY)
+    @Column(name = "thumbnail")
+    private byte[] thumbnail;
 
     @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
 
-    @Column(name = "image_date", nullable = false, columnDefinition = "timestamp default current_timestamp")
+    @Column(name = "date", nullable = false, columnDefinition = "timestamp default current_timestamp")
     private LocalDateTime imageDate = LocalDateTime.now();
 }

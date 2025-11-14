@@ -24,7 +24,7 @@ public class ServiceTestHelper {
     private static final ProjectionFactory factory = new SpelAwareProxyProjectionFactory();
     public static final PageRequest pageable = PageRequest.of(0, 10);
 
-    public static <T> T createImageProjection(boolean isDeleted, Class<T> type) {
+    public static <T> T createImageProjection(Class<T> type) {
         Map<String, Object> imageMap = new HashMap<>();
         imageMap.put("id", 10L);
         imageMap.put("name", "my image");
@@ -32,7 +32,6 @@ public class ServiceTestHelper {
         imageMap.put("imageData", new byte[]{1, 2, 3});
         imageMap.put("imageDate", LocalDateTime.now());
         imageMap.put("user", createImageUserProjection());
-        imageMap.put("deleted", isDeleted);
         return factory.createProjection(type, imageMap);
     }
 
@@ -60,10 +59,9 @@ public class ServiceTestHelper {
         SecurityContextHolder.setContext(securityContext);
     }
 
-    public static Image createImage(boolean isDeleted){
+    public static Image createImage(){
         Image image = new Image();
         image.setId(10L);
-        image.setDeleted(isDeleted);
         image.setImageData(new byte[]{1, 2, 3});
         image.setImageDate(LocalDateTime.now());
         return image;

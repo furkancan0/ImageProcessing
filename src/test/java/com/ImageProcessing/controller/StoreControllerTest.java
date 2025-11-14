@@ -100,15 +100,6 @@ public class StoreControllerTest extends BaseIntegrationTest{
     }
 
     @Test
-    @DisplayName("[400] GET /api/v1/store/{imageId} - Download Image Bad Request")
-    public void downloadImageShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/store/{imageId}", 2L))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", Matchers.is("IMAGE_DELETED")));
-    }
-
-
-    @Test
     @DisplayName("[200] GET /api/v1/store/images/{userId} - Get User Images")
     public void getImagesByUserId() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/store/images/{userId}", 1L))
@@ -125,19 +116,4 @@ public class StoreControllerTest extends BaseIntegrationTest{
                 .andExpect(jsonPath("$", Matchers.is("PRIVATE_USER")));
     }
 
-    @Test
-    @DisplayName("[200] DELETE /api/v1/store/{imageId} - Delete Image")
-    public void deleteImage() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/store/{imageId}", 4L))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", Matchers.is("YOUR_IMAGE_WAS_DELETED")));
-    }
-
-    @Test
-    @DisplayName("[404] DELETE /api/v1/store/{imageId} - Delete Image Not found")
-    public void deleteImageShouldReturnNotfound() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/store/{imageId}", 99L))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$", Matchers.is("IMAGE_NOT_FOUND")));
-    }
 }

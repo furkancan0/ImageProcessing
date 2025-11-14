@@ -22,11 +22,11 @@ public class ImageUtils {
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
         byte[] tmp = new byte[4*1024];
-        while (!deflater.finished()) {
-            int size = deflater.deflate(tmp);
-            outputStream.write(tmp, 0, size);
-        }
         try {
+            while (!deflater.finished()) {
+                int size = deflater.deflate(tmp);
+                outputStream.write(tmp, 0, size);
+            }
             outputStream.close();
         } catch (Exception ignored) {
         }
@@ -67,10 +67,13 @@ public class ImageUtils {
     }
 
     public static BufferedImage flip(BufferedImage img) {
-        AffineTransform tx = AffineTransform.getScaleInstance(1, -1);
-        tx.translate(0, -img.getHeight(null));
-        AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
-        img = op.filter(img, null);
+        try {
+            AffineTransform tx = AffineTransform.getScaleInstance(1, -1);
+            tx.translate(0, -img.getHeight(null));
+            AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+            img = op.filter(img, null);
+        }catch (Exception ignored){
+        }
         return img;
     }
 
@@ -90,10 +93,15 @@ public class ImageUtils {
         return mirroredImage;
     }
 
-    public static byte[] conversionImage(BufferedImage img, String format) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-        ImageIO.write(img, format, baos);
-        return baos.toByteArray();
+    public static byte[] conversionImage(BufferedImage img, String format){
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(img, format, baos);
+            byte[] imageInByte = baos.toByteArray();
+            baos.close();
+            return imageInByte;
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

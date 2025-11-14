@@ -1,6 +1,7 @@
 package com.ImageProcessing.controller;
 
 import com.ImageProcessing.dto.Coordinates;
+import com.ImageProcessing.dto.ImageDto;
 import com.ImageProcessing.service.ImageService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/image")
@@ -31,19 +33,19 @@ public class ImageController {
                 .body(imageData);
     }
 
-    @PostMapping("/conversion")
+    /*@PostMapping("/conversion")
     public ResponseEntity<?> conversionImage(@RequestParam("image") MultipartFile file, @RequestParam(value = "format") String format) throws IOException {
         byte[] imageData = service.conversionImage(file, format);
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.valueOf(MediaType.IMAGE_PNG_VALUE))
                 .body(imageData);
-    }
+    }*/
 
     @PostMapping("/flip")
     public ResponseEntity<?> flipImage(@RequestParam("image") MultipartFile file) throws IOException {
-        byte[] imageData = service.flipImage(file);
+        String imageData = service.flipImage(file);
         return ResponseEntity.status(HttpStatus.OK)
-                .contentType(MediaType.valueOf(MediaType.IMAGE_PNG_VALUE))
+                .contentType(MediaType.TEXT_PLAIN)
                 .body(imageData);
     }
 
@@ -65,10 +67,10 @@ public class ImageController {
 
     @PostMapping("/grayScale")
     public ResponseEntity<?> grayScale(@RequestParam("image") MultipartFile file) throws IOException {
-        byte[] imageData = service.grayScale(file);
+        String imageData = service.grayScale(file);
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.valueOf(MediaType.IMAGE_PNG_VALUE))
-                .body(imageData);
+                .body(imageData.trim().getBytes());
     }
     @PostMapping("/crop")
     public ResponseEntity<?> cropImage(@RequestParam("image") MultipartFile file, @RequestParam(value = "jsonStr") String jsonStr) throws IOException {
@@ -79,5 +81,4 @@ public class ImageController {
                 .contentType(MediaType.valueOf(MediaType.IMAGE_PNG_VALUE))
                 .body(imageData);
     }
-
 }

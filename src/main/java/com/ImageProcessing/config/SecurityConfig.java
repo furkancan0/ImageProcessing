@@ -30,8 +30,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers("api/v1/auth/**")
                                 .permitAll()
+                                .requestMatchers("/actuator/**").permitAll()
                                 .requestMatchers("api/v1/image/**").permitAll()
                                 .requestMatchers("api/v1/store/**").hasRole("USER")
+                                .requestMatchers("api/v1/analytic/**").permitAll()
                                 .requestMatchers("api/checkout/**").hasRole("USER")
                                 .anyRequest()
                                 .authenticated())

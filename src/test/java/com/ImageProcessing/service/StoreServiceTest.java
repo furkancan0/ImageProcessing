@@ -1,12 +1,16 @@
 package com.ImageProcessing.service;
 
 import com.ImageProcessing.ServiceTestHelper;
+import com.ImageProcessing.config.RabbitConfig;
+import com.ImageProcessing.dto.ImageDto;
+import com.ImageProcessing.dto.UploadImageResponse;
 import com.ImageProcessing.entity.Image;
 import com.ImageProcessing.entity.User;
 import com.ImageProcessing.exception.ApiRequestException;
 import com.ImageProcessing.repository.ImageRepository;
 import com.ImageProcessing.repository.UserRepository;
 import com.ImageProcessing.repository.projection.ImageProjection;
+import com.ImageProcessing.util.ImageUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
@@ -45,16 +50,22 @@ class StoreServiceTest {
     @Mock
     private AuthService authService;
 
+    @Mock
+    private ImageUtils imageUtils;
+
+    @Mock
+    private RabbitTemplate rabbitTemplate;
+
     @InjectMocks
     private StoreService storeService;
 
     private User mockUser;
 
     private static final List<ImageProjection> imageProjections = Arrays.asList(
-            ServiceTestHelper.createImageProjection(false, ImageProjection.class),
-            ServiceTestHelper.createImageProjection(false, ImageProjection.class));
+            ServiceTestHelper.createImageProjection(ImageProjection.class),
+            ServiceTestHelper.createImageProjection(ImageProjection.class));
     private static final Page<ImageProjection> pageableImageProjections = new PageImpl<>(imageProjections, pageable, 10);
-    private static final ImageProjection imageProjection = ServiceTestHelper.createImageProjection(false, ImageProjection.class);
+    private static final ImageProjection imageProjection = ServiceTestHelper.createImageProjection(ImageProjection.class);
 
     @BeforeEach
     public void setUp() {
@@ -99,15 +110,6 @@ class StoreServiceTest {
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
     }
 
-    @Test
-    void downloadImage_ShouldImageDeleted() {
-        ImageProjection imageProjection = ServiceTestHelper.createImageProjection(true, ImageProjection.class);
-        when(imageRepository.getImageById(10L)).thenReturn(Optional.of(imageProjection));
-        ApiRequestException exception = assertThrows(ApiRequestException.class,
-                () -> storeService.downloadImage(10L));
-        assertEquals("IMAGE_DELETED", exception.getMessage());
-        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
-    }
 
     @Test
     void searchImagesByFilter() {
@@ -121,10 +123,26 @@ class StoreServiceTest {
 
     @Test
     void uploadImage() throws IOException {
-        MockMultipartFile file = new MockMultipartFile("image", "image.jpg",
-                "image/jpeg", new byte[]{1, 2, 3});
-        assertEquals("IMAGE_UPLOAD_SUCCESSFUL", storeService.uploadImage(file));
+        MockMultipartFile file = new MockMultipartFile("file", "testImage.jpg", "image/jpeg"
+                , "image".getBytes());
+        Image mockImage = new Image(1L, "testImage.jpg", "image/jpeg", "desc",
+                100L, "image".getBytes(),"image".getBytes(), mockUser, LocalDateTime.now());
+
+        when(authService.getCurrentUser()).thenReturn(mockUser);
+        when(imageRepository.save(any(Image.class))).thenReturn(mockImage);
+
+        UploadImageResponse response = storeService.uploadImage(file);
+
+        // Assert
+        verify(rabbitTemplate, times(1)).convertAndSend(
+                eq(RabbitConfig.IMAGE_FANOUT_EXCHANGE), eq(""), any(ImageDto.class)
+        );
+
+        assertNotNull(response);
+        assertEquals("Upload successful", response.getMessage());
+        assertEquals(Long.valueOf(1), response.getId());
         verify(imageRepository, times(1)).save(any(Image.class));
+        verify(authService, times(1)).getCurrentUser();
     }
 
     @Test
@@ -142,15 +160,6 @@ class StoreServiceTest {
         });
         assertEquals("PRIVATE_USER", ex.getMessage());
         SecurityContextHolder.clearContext();
-    }
-
-    @Test
-    void deleteTweet() {
-        Image mockImage = ServiceTestHelper.createImage(false);
-        when(imageRepository.getImageByUserId(1L, 10L)).thenReturn(Optional.of(mockImage));
-        assertEquals("YOUR_IMAGE_WAS_DELETED", storeService.deleteImage(mockImage.getId()));
-        assertTrue(mockImage.isDeleted());
-        verify(imageRepository, times(1)).getImageByUserId(1L,mockImage.getId());
     }
 
 }

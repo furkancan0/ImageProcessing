@@ -45,28 +45,11 @@ class ImageServiceTest {
         assertNotNull(resized);
     }
 
-    @Test
-    void testConversionImage_ValidFormat() throws IOException {
-        byte[] result = imageService.conversionImage(mockImageFile, "PNG");
-        assertNotNull(result);
-    }
-
-    @Test
-    void testConversionImage_UnsupportedFormat_Throws() {
-        MockMultipartFile badFile = new MockMultipartFile(
-                "image", "bad.csv", "image/csv", new byte[]{1, 2}
-        );
-
-        ApiRequestException ex = assertThrows(ApiRequestException.class, () ->
-                imageService.conversionImage(badFile, "CSV")
-        );
-
-        assertEquals("Format not supported", ex.getMessage());
-    }
 
     @Test
     void testGrayScale_ReturnsBytes() throws IOException {
-        byte[] result = imageService.grayScale(mockImageFile);
+        String image = imageService.grayScale(mockImageFile);
+        byte[] result = image.trim().getBytes();
         assertNotNull(result);
     }
 
@@ -80,7 +63,8 @@ class ImageServiceTest {
 
     @Test
     void testFlipImage_ReturnsBytes() throws IOException {
-        byte[] flipped = imageService.flipImage(mockImageFile);
+        String image = imageService.flipImage(mockImageFile);
+        byte[] flipped = image.trim().getBytes();
         assertNotNull(flipped);
     }
 

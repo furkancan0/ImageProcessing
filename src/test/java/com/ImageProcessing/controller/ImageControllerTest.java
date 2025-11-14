@@ -67,7 +67,7 @@ public class ImageControllerTest extends BaseIntegrationTest {
         mockMvc.perform(multipart("/api/v1/image/flip")
                         .file(mockImageFile))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.IMAGE_PNG));
+                .andExpect(content().contentType(MediaType.TEXT_PLAIN));
     }
 
     @Test

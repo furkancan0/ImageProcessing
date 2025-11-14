@@ -15,9 +15,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-public interface ImageRepository extends JpaRepository<Image,Long> {
+public interface ImageRepository extends JpaRepository<Image, Long> {
     @Query("SELECT image FROM Image image WHERE image.id = :imageId ")
     Optional<ImageProjection> getImageById(@Param("imageId") Long imageId);
+
+    @Query("SELECT image FROM Image image WHERE image.id = :imageId ")
+    Optional<Image> findImageById(@Param("imageId") Long imageId);
 
     @Query("""
             SELECT image FROM Image image
@@ -31,6 +34,13 @@ public interface ImageRepository extends JpaRepository<Image,Long> {
             "AND image.user.id = :userId " +
             "ORDER BY image.imageDate ASC")
     Page<ImageProjection> searchUserImages(@Param("userId") Long userId, String query, Pageable pageable);
+
+    @Query(value = """
+        SELECT * FROM images 
+        WHERE search_vector @@ plainto_tsquery('english', :query)
+        ORDER BY ts_rank(search_vector, plainto_tsquery('english', :query)) DESC
+        """, nativeQuery = true)
+    List<Image> search(@Param("query") String query);
 
     @Query("SELECT image FROM Image image " +
             "WHERE (coalesce(:types, null) IS NULL OR split_part(image.type, '/', 2) IN :types) " +
