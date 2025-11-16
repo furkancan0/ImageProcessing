@@ -46,6 +46,6 @@ After image upload:
 # 🛠️Includes all service and integration tests.   
 
 # Project Idea  
-https://roadmap.sh/projects/image-processing-service
+- https://roadmap.sh/projects/image-processing-service
 
 
