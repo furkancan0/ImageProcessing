@@ -33,7 +33,7 @@ This is an Image Processing System built with Java Spring Boot, featuring user a
 
 🧭 Example Workflow Summary  
 After image upload:  
-- Save image in DB or S3  
+- Save image in DB
 - Publish event image.uploaded to RabbitMQ  
 - Consumers listen and perform:  
 --> Thumbnail creation  
